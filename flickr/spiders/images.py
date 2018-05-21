@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
+import os
 from urllib.parse import urlparse
 
-import os
 import scrapy
 
 
@@ -24,16 +24,17 @@ class ImagesSpider(scrapy.Spider):
         with open('images.list') as f:
             for url in f:
                 url = url.strip()
-                fn = self.get_fn(url)
+                if url > '':
+                    fn = self.get_fn(url)
 
-                if os.path.isfile(fn):
-                    continue
+                    if os.path.isfile(fn):
+                        continue
 
-                d = os.path.dirname(fn)
-                if not os.path.isdir(d):
-                    os.makedirs(d)
+                    d = os.path.dirname(fn)
+                    if not os.path.isdir(d):
+                        os.makedirs(d)
 
-                yield scrapy.Request(url, meta={'fn': fn})
+                    yield scrapy.Request(url, meta={'fn': fn})
 
     def parse(self, response):
         with open(response.meta['fn'], 'wb') as f:
