@@ -51,15 +51,15 @@ class PagesSpider(scrapy.Spider):
 
         self.cookies = self.parse_cookies(self.cookies_str)
 
-        t = time.time()
+        t = int(time.time())
         while t >= 946684800:
-            u = self.urlt + '&api_key=' + api_key
+            u = self.urlt + ('&api_key=%s&min_taken_date=%s&max_taken_date=%s' % (api_key, t - 3600 * 24 * 30, t))
             # + ('&max_taken_date=%s' % t)
             t -= 3600 * 24 * 30
 
-            yield response.follow(u, self.parse_page,
-                                  cookies=self.cookies,
-                                  headers={'referer': 'https://www.flickr.com/search/?text=coca%20cola'})
+            yield scrapy.Request(u, self.parse_page,
+                                 cookies=self.cookies,
+                                 headers={'referer': 'https://www.flickr.com/search/?text=coca%20cola'})
 
     def parse_page(self, response):
         js = json.loads(response.body_as_unicode())
